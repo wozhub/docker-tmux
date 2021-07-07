@@ -23,7 +23,7 @@ RUN TMUX_API="https://api.github.com/repos/tmux/tmux/releases/latest" \
     curl -o /tmp/tmux.tgz -L "${TMUX_URL}" && \
     cd /tmp && tar xvfz /tmp/tmux.tgz && \
     cd "/tmp/tmux-${TMUX_VERSION}" && \
-    ./configure && \
+    CONFIG_SHELL=/bin/bash ./configure && \
     make && \
     make install
 
