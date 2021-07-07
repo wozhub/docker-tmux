@@ -3,6 +3,7 @@ MAINTAINER David Wozniak
 
 # Install prerequisites
 RUN dnf install -y \
+        bash \
         curl \
         gcc \
         libevent-devel \
