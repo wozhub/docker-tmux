@@ -3,7 +3,6 @@ MAINTAINER David Wozniak
 
 # Install prerequisites
 RUN dnf install -y \
-        bash \
         curl \
         gcc \
         libevent-devel \
@@ -23,14 +22,11 @@ RUN TMUX_API="https://api.github.com/repos/tmux/tmux/releases/latest" \
     curl -o /tmp/tmux.tgz -L "${TMUX_URL}" && \
     cd /tmp && tar xvfz /tmp/tmux.tgz && \
     cd "/tmp/tmux-${TMUX_VERSION}" && \
-    CONFIG_SHELL=/bin/bash ./configure && \
+    ./configure && \
     make && \
     make install
 
 # Copy binary to an empty image
 FROM fedora:latest  
-
-ARG TMUX_VERSION
-ENV TMUX_VERSION=${TMUX_VERSION}
 
 COPY --from=builder /usr/local/bin/tmux /tmux
