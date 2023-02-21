@@ -1,0 +1,33 @@
+FROM archlinux:latest AS builder
+MAINTAINER David Wozniak
+
+# Install prerequisites
+RUN pacman -Sy --noconfirm \
+        curl \
+        gcc \
+        libevent \
+        ncurses \
+        make \
+        && \
+    pacman -Scc --noconfirm
+
+    # && \ rm -rf /var/cache/yum/*
+
+# Get latest release
+RUN TMUX_API="https://api.github.com/repos/tmux/tmux/releases/latest" \
+    TMUX_URL="https://github.com/tmux/tmux/releases/download" \
+    TMUX_VERSION=$(curl -s "${TMUX_API}" | grep -oP '"tag_name": "\K(.*)(?=")') && \
+    echo "Found TMUX_VERSION=${TMUX_VERSION}" && \
+    TMUX_URL="${TMUX_URL}/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz" && \
+    echo "TMUX_URL=${TMUX_URL}" && \
+    curl -o /tmp/tmux.tgz -L "${TMUX_URL}" && \
+    cd /tmp && tar xvfz /tmp/tmux.tgz && \
+    cd "/tmp/tmux-${TMUX_VERSION}" && \
+    ./configure && \
+    make && \
+    make install
+
+# Copy binary to an empty image
+FROM fedora:latest  
+
+COPY --from=builder /usr/local/bin/tmux /tmux
